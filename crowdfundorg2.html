@@ -1,0 +1,180 @@
+<html>
+<head>
+<script type="text/javascript" src="abilist.js">  </script>
+<script type="text/javascript"> 
+var accounts = null;
+var cfcontractInstance = null;
+var resultbox = null;
+var callbacks = new Map();
+
+window.addEventListener('load', crowdfund);
+
+async function crowdfund() {
+  if (window.ethereum) {
+    ethereum.autoRefreshOnNetworkChange = false;
+    window.ethereum.on('networkChanged', function(id) {console.log(id) });
+    window.web3 = new Web3(ethereum);
+    accounts = await ethereum.enable();
+    web3.eth.getBalance(accounts[0], function(err, res) { console.log(res)});
+   
+    //var address = "0xe5028Fc0600B3354BA1b434215767003cf8b1F09";
+    getCrowdFundInstance();
+
+  // Legacy dapp browsers...
+  } else if (window.web3) {
+    window.web3 = new Web3(web3.currentProvider);
+    // Acccounts always exposed
+//    web3.eth.sendTransaction({/* ... */});
+  }
+  // Non-dapp browsers...
+  else {
+    console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+    window.web3 = null
+  }
+}
+
+function getCrowdFundInstance() {
+    var address = "0x13928512F9916f3b2883D7e75634Be87486097e2";
+    var namereg = web3.eth.contract(nameregistryabi).at(address);//, cfcontractInstance);
+    try {
+        namereg.getAddr("crowdfund", function(err, value) {
+            cfcontractInstance = web3.eth.contract(cfabi).at(value);
+            registerEventHandlers();
+        });
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+function registerEventHandlers() {
+  let btn = document.getElementById("fund");
+  btn.addEventListener('click', fund);
+  btn = document.getElementById("investors");
+  btn.addEventListener('click', investors);
+
+  callbacks.set("checkGoalReached", cfcontractInstance.checkGoalReached);
+  callbacks.set("kill", cfcontractInstance.kill);
+  callbacks.set("deadline", cfcontractInstance.deadline);
+  callbacks.set("ended", cfcontractInstance.ended);
+  callbacks.set("getBalance", cfcontractInstance.getBalance);
+  callbacks.set("goalAmount", cfcontractInstance.goalAmount);
+  callbacks.set("numInvestors", cfcontractInstance.numInvestors);
+  callbacks.set("status", cfcontractInstance.status);
+  callbacks.set("totalAmount", cfcontractInstance.totalAmount);
+  callbacks.set("owner", cfcontractInstance.owner);
+
+  btn = document.getElementById("checkGoalReached");
+  btn.addEventListener('click', showvalues);
+  btn = document.getElementById("kill");
+  btn.addEventListener('click', showvalues);
+  btn = document.getElementById("deadline");
+  btn.addEventListener('click', showvalues);
+  btn = document.getElementById("ended");
+  btn.addEventListener('click', showvalues);
+  btn = document.getElementById("getBalance");
+  btn.addEventListener('click', showvalues);
+  btn = document.getElementById("goalAmount");
+  btn.addEventListener('click', showvalues);
+  btn = document.getElementById("numInvestors");
+  btn.addEventListener('click', showvalues);
+  btn = document.getElementById("status");
+  btn.addEventListener('click', showvalues);
+  btn = document.getElementById("totalAmount");
+  btn.addEventListener('click', showvalues);
+  btn = document.getElementById("owner");
+  btn.addEventListener('click', showvalues);
+
+  resultbox = document.getElementById("resultbox");
+}
+
+
+
+async function fund() {
+  if (cfcontractInstance != null) {
+    try {
+        let valtxt = document.getElementById("fundamt");
+        let val = valtxt.value;
+        cfcontractInstance.fund({ from: accounts[0], value:val }, function(err, value) {
+          resultbox.innerHTML = value;
+        });
+
+    } catch (error) {
+        resultbox.innerHTML = "error occured";
+        console.log(error);
+    }
+  }
+}
+
+
+async function investors() {
+  if (cfcontractInstance != null) {
+    try {
+        let valtxt = document.getElementById("investorid");
+        let id = valtxt.value;
+        cfcontractInstance.investors(id, function(err, value) {
+          resultbox.innerHTML = value;
+        });
+
+    } catch (error) {
+        resultbox.innerHTML = "error occured";
+        console.log(error);
+    }
+  }
+}
+
+async function showvalues() {
+  if (cfcontractInstance != null) {
+    try {
+	var deadline = this.id
+        let fn = callbacks.get(this.id);
+        fn(function(err, value) {
+          if (deadline == "deadline") {
+		  var date = new Date(parseInt(value) * 1000);
+		  value = value + ": " + date.toString();
+	  }
+          resultbox.innerHTML = value;
+        });
+
+    } catch (error) {
+        resultbox.innerHTML = "error occured";
+        console.log(error);
+    }
+  }
+}
+
+
+</script>
+</head>
+<body>
+<h1> CrowdFund Test </h1>
+<br/>
+<input type="button" id="checkGoalReached" value="checkGoalReached()">
+<br/>
+<input type="button" id="fund" value="fund()"> Amount: <input type="text" id="fundamt" value="">  Wei
+<br/>
+<input type="button" id="kill" value="kill()">
+<br/>
+<input type="button" id="deadline" value="deadline">
+<br/>
+<input type="button" id="ended" value="ended">
+<br/>
+<input type="button" id="investors" value="investors">  index: <input type="text" id="investorid" value="">
+<br/>
+<input type="button" id="getBalance" value="getBalance()">
+<br/>
+<input type="button" id="goalAmount" value="goalAmount">
+<br/>
+<input type="button" id="numInvestors" value="numInvestors">
+<br/>
+<input type="button" id="status" value="status">
+<br/>
+<input type="button" id="totalAmount" value="totalAmount">
+<br/>
+<input type="button" id="owner" value="owner">
+<br/>
+Result: <span id="resultbox"> </span>
+
+
+</body>
+</html>

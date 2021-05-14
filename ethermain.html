@@ -1,0 +1,250 @@
+<html> <head>
+<script src='node_modules/web3/dist/web3.min.js'></script>
+<script type="text/javascript"> 
+var accounts;
+var constructInstance;
+var resultbox;
+
+window.addEventListener('load', async () => {
+	if (window.ethereum) {
+		window.alert('Modern dapp browsers')
+	} else if (window.web3) {
+		window.alert('Legacy dapp browsers')
+	} else {
+		window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!');
+	}
+
+  let btn = document.getElementById("btn");
+  btn.addEventListener('click', btnClicked);
+
+});
+
+async function btnClicked() {
+	alert("btnClicked()");
+	window.accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+	const showAccount = document.querySelector('.showAccount');
+	showAccount.innerHTML = accounts[0];
+	
+var abiobj = [
+		{
+					"inputs": [
+									{
+														"internalType": "string",
+														"name": "_msg1",
+														"type": "string"
+													}
+								],
+					"stateMutability": "nonpayable",
+					"type": "constructor"
+				},
+		{
+					"inputs": [],
+					"name": "counter",
+					"outputs": [
+									{
+														"internalType": "uint8",
+														"name": "",
+														"type": "uint8"
+													}
+								],
+					"stateMutability": "view",
+					"type": "function"
+				},
+		{
+					"inputs": [],
+					"name": "getMsg2",
+					"outputs": [
+									{
+														"internalType": "string",
+														"name": "",
+														"type": "string"
+													}
+								],
+					"stateMutability": "view",
+					"type": "function"
+				},
+		{
+					"inputs": [],
+					"name": "msg1",
+					"outputs": [
+									{
+														"internalType": "string",
+														"name": "",
+														"type": "string"
+													}
+								],
+					"stateMutability": "view",
+					"type": "function"
+				},
+		{
+					"inputs": [],
+					"name": "owner",
+					"outputs": [
+									{
+														"internalType": "address",
+														"name": "",
+														"type": "address"
+													}
+								],
+					"stateMutability": "view",
+					"type": "function"
+				},
+		{
+					"inputs": [],
+					"name": "setCounter",
+					"outputs": [],
+					"stateMutability": "nonpayable",
+					"type": "function"
+				},
+		{
+					"inputs": [
+									{
+														"internalType": "string",
+														"name": "_msg2",
+														"type": "string"
+													}
+								],
+					"name": "setMsg2",
+					"outputs": [],
+					"stateMutability": "nonpayable",
+					"type": "function"
+				}
+	];
+var address = "0xDA5B2B5b8eb8B632f445Ad58374174e54D8a322D";
+
+window.web3 = new Web3(window.ethereum);
+contractInstance = await new window.web3.eth.Contract(abiobj, address);
+
+  let btn = document.getElementById("setMsg2");
+	  btn.addEventListener('click', setMsg2Clicked);
+	  btn = document.getElementById("setCounter");
+	  btn.addEventListener('click', setCounterClicked);
+	  btn = document.getElementById("counter");
+	  btn.addEventListener('click', counterClicked);
+	  btn = document.getElementById("getMsg2");
+	  btn.addEventListener('click', getMsg2Clicked);
+	  btn = document.getElementById("msg1");
+	  btn.addEventListener('click', msg1Clicked);
+	  btn = document.getElementById("owner");
+	  btn.addEventListener('click', ownerClicked);
+
+	  resultbox = document.getElementById("resultbox");
+}
+
+async function setMsg2Clicked() {
+  if (contractInstance != null) {
+    try {
+
+        let valtxt = document.getElementById("msg2");
+        let val = valtxt.value;
+	let value = await contractInstance.methods.setMsg2(val).send({from:accounts[0]});
+	resultbox.innerHTML = value;
+
+
+    } catch (error) {
+        resultbox.innerHTML = "error occured";
+        console.log(error);
+    }
+  }
+}
+
+async function setCounterClicked() {
+  if (contractInstance != null) {
+    try {
+	let value = await contractInstance.methods.setCounter().send({from:accounts[0]});
+	resultbox.innerHTML = value;
+
+    } catch (error) {
+        resultbox.innerHTML = "error occured";
+        console.log(error);
+    }
+  }
+}
+
+async function counterClicked() {
+  if (contractInstance != null) {
+    try {
+	const value = await contractInstance.methods.counter().call();
+	resultbox.innerHTML = value;
+
+
+    } catch (error) {
+        resultbox.innerHTML = "error occured";
+        console.log(error);
+    }
+  }
+}
+
+async function getMsg2Clicked() {
+  if (contractInstance != null) {
+    try {
+	const value = await contractInstance.methods.getMsg2().call();
+	resultbox.innerHTML = value;
+
+
+    } catch (error) {
+        resultbox.innerHTML = "error occured";
+        console.log(error);
+    }
+  }
+}
+
+async function msg1Clicked() {
+  if (contractInstance != null) {
+    try {
+	const value = await contractInstance.methods.msg1().call();
+	resultbox.innerHTML = value;
+
+
+    } catch (error) {
+        resultbox.innerHTML = "error occured";
+        console.log(error);
+    }
+  }
+}
+
+async function ownerClicked() {
+  if (contractInstance != null) {
+    try {
+	const value = await contractInstance.methods.owner().call();
+	resultbox.innerHTML = value;
+
+
+    } catch (error) {
+        resultbox.innerHTML = "error occured";
+        console.log(error);
+    }
+  }
+}
+
+
+
+
+</script>
+</head> <body>
+<h1> Event Test </h1>
+<br/>
+<input type="button" id="btn" value="click">
+<h2>Account: <span class="showAccount"></span></h2>
+<input type="button" id="setMsg2" value="setMsg2()">
+<input type="text" id="msg2" value="">
+<br/>
+<input type="button" id="setCounter" value="setCounter()">
+<br/>
+<input type="button" id="counter" value="counter">
+<br/>
+<input type="button" id="getMsg2" value="getMsg2">
+<br/>
+<input type="button" id="msg1" value="msg1">
+<br/>
+<input type="button" id="owner" value="owner">
+<br/>
+Result: <span id="resultbox"> </span>
+
+</body> </html>
+
+
+
+
+
+

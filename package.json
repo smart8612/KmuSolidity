@@ -1,0 +1,14 @@
+{
+  "name": "kmusolidity",
+  "version": "1.0.0",
+  "description": "Kookmin Univ,. College of Software Practice in Network Lecture Solidity Dapp Project",
+  "main": "ethertest.js",
+  "scripts": {
+    "test": "node ethertest.js"
+  },
+  "author": "JeongTaek Han",
+  "license": "ISC",
+  "dependencies": {
+    "web3": "^1.3.6"
+  }
+}

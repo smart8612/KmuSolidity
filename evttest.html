@@ -1,0 +1,17 @@
+<html> <head>
+<script type="text/javascript"> 
+window.addEventListener('load', async () => {
+
+  let btn = document.getElementById("btn");
+  btn.addEventListener('click', btnClicked);
+
+});
+async function btnClicked() {
+	alert("btnClicked()");
+}
+</script>
+</head> <body>
+<h1> Event Test </h1>
+<br/>
+<input type="button" id="btn" value="click">
+</body> </html>

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+  <title>KMU Tree Funding</title>
+
+  <!-- CSS  -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <style type="text/css" media="screen,projection">
+    /* Custom Stylesheet */
+    /**
+    * Use this file to override Materialize files so you can update
+    * the core Materialize files in the future
+    *
+    * Made By MaterializeCSS.com
+    */
+
+    .icon-block {
+      padding: 0 15px;
+    }
+    .icon-block .material-icons {
+      font-size: inherit;
+    }
+  </style>
+</head>
+<body>
+  <nav class="light-blue lighten-1" role="navigation">
+    <div class="nav-wrapper container"><a id="logo-container" href="/index.html" class="brand-logo">KMU Tree Funding</a>
+      <ul class="right hide-on-med-and-down">
+        <li><a href="/index.html">Home</a></li>
+      </ul>
+
+      <ul id="nav-mobile" class="sidenav">
+        <li><a href="/index.html">Home</a></li>
+      </ul>
+      <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+    </div>
+  </nav>
+  <div class="section no-pad-bot" id="index-banner">
+    <div class="container">
+      <br><br>
+      <h1 class="header center orange-text">Metamask를 통해 로그인하세요!</h1>
+      <div class="row center">
+        <h5 class="header col s12 light" id="loginResultBox">로그인에 성공하면 이곳에 계정 주소가 표시됩니다</h5>
+      </div>
+      <div class="row center">
+        <a class="waves-effect waves-light btn-large" href="#" id="connetMetaMaskBtn">연동하기</a>
+      </div>
+      <br><br>
+
+    </div>
+  </div>
+
+
+  <div class="container">
+    <div class="section">
+
+      <!--   Icon Section   -->
+      <div class="row">
+        <div class="col s12 m4">
+          <div class="icon-block">
+            <h2 class="center light-blue-text"><i class="material-icons">flash_on</i></h2>
+            <h5 class="center">Speeds up development</h5>
+
+            <p class="light">We did most of the heavy lifting for you to provide a default stylings that incorporate our custom components. Additionally, we refined animations and transitions to provide a smoother experience for developers.</p>
+          </div>
+        </div>
+
+        <div class="col s12 m4">
+          <div class="icon-block">
+            <h2 class="center light-blue-text"><i class="material-icons">group</i></h2>
+            <h5 class="center">User Experience Focused</h5>
+
+            <p class="light">By utilizing elements and principles of Material Design, we were able to create a framework that incorporates components and animations that provide more feedback to users. Additionally, a single underlying responsive system across all platforms allow for a more unified user experience.</p>
+          </div>
+        </div>
+
+        <div class="col s12 m4">
+          <div class="icon-block">
+            <h2 class="center light-blue-text"><i class="material-icons">settings</i></h2>
+            <h5 class="center">Easy to work with</h5>
+
+            <p class="light">We have provided detailed documentation as well as specific code examples to help new users get started. We are also always open to feedback and can answer any questions a user may have about Materialize.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <br><br>
+  </div>
+
+  <footer class="page-footer orange">
+    <div class="container">
+      <div class="row">
+        <div class="col l6 s12">
+          <h5 class="white-text">Company Bio</h5>
+          <p class="grey-text text-lighten-4">We are a team of college students working on this project like it's our full time job. Any amount would help support and continue development on this project and is greatly appreciated.</p>
+
+
+        </div>
+        <div class="col l3 s12">
+          <h5 class="white-text">Settings</h5>
+          <ul>
+            <li><a class="white-text" href="#!">Link 1</a></li>
+            <li><a class="white-text" href="#!">Link 2</a></li>
+            <li><a class="white-text" href="#!">Link 3</a></li>
+            <li><a class="white-text" href="#!">Link 4</a></li>
+          </ul>
+        </div>
+        <div class="col l3 s12">
+          <h5 class="white-text">Connect</h5>
+          <ul>
+            <li><a class="white-text" href="#!">Link 1</a></li>
+            <li><a class="white-text" href="#!">Link 2</a></li>
+            <li><a class="white-text" href="#!">Link 3</a></li>
+            <li><a class="white-text" href="#!">Link 4</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <div class="container">
+      Made by <a class="orange-text text-lighten-3" href="http://materializecss.com">Materialize</a>
+      </div>
+    </div>
+  </footer>
+
+
+  <!--  Scripts-->
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script src='node_modules/web3/dist/web3.min.js'></script>
+  <script>
+  var accounts = null;
+  var contractInstance = null;
+  var address = '0x06E16f12DBFBB71ccb5eAf937899Ed02c0281C92';
+  var abiobj = [
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_fundId",
+				"type": "uint256"
+			}
+		],
+		"name": "checkGoalReached",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_name",
+				"type": "string"
+			},
+			{
+				"name": "_duration",
+				"type": "uint256"
+			},
+			{
+				"name": "_goalAmount",
+				"type": "uint256"
+			}
+		],
+		"name": "createSmartTreeFunding",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_fundId",
+				"type": "uint256"
+			}
+		],
+		"name": "fund",
+		"outputs": [],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"name": "_name",
+				"type": "string"
+			},
+			{
+				"name": "_duration",
+				"type": "uint256"
+			},
+			{
+				"name": "_goalAmount",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "treeId",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"name": "duration",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"name": "goalAmount",
+				"type": "uint256"
+			}
+		],
+		"name": "NewTreeFund",
+		"type": "event"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "funds",
+		"outputs": [
+			{
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"name": "numInvestors",
+				"type": "uint256"
+			},
+			{
+				"name": "deadline",
+				"type": "uint256"
+			},
+			{
+				"name": "status",
+				"type": "string"
+			},
+			{
+				"name": "ended",
+				"type": "bool"
+			},
+			{
+				"name": "goalAmount",
+				"type": "uint256"
+			},
+			{
+				"name": "totalAmount",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "fundsToInvestors",
+		"outputs": [
+			{
+				"name": "addr",
+				"type": "address"
+			},
+			{
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "fundsToOwner",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getFundsCount",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+
+  async function getTreeFundsResult() {
+    console.log(contractInstance);
+    if (contractInstance != null) {
+      try {
+        let value1 = await contractInstance.methods['funds(uint256)'](0).call();
+        console.log(value1);
+        let value2 = await contractInstance.methods['getFundsCount']().call();
+        console.log(value2);
+
+      } catch (error) {
+          console.log(error);
+      }
+    }
+  }
+
+  (function($){
+    $(window).load(async () => {
+      if (window.ethereum) {
+        window.web3 = new Web3(window.ethereum);
+        contractInstance = await new window.web3.eth.Contract(abiobj, address);
+        getTreeFundsResult();
+
+      } else if (window.web3) {
+        window.web3 = new Web3(web3.currentProvider);
+
+      } else {
+        window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!');
+
+      }
+    });
+
+    $(document).ready(function(){
+      $('#connetMetaMaskBtn').click(async () => {
+        window.accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+        
+        if (window.accounts[0] != $('#loginResultBox').text()) {
+	        $('#loginResultBox').text(window.accounts[0]);
+          $('#connetMetaMaskBtn').text("Fund 생성하기");
+        } else {
+          alert("Logic For Create Fund");
+        }
+        
+      });
+
+    });
+
+    $(function(){
+      $('.sidenav').sidenav();
+    }); // end of document ready
+  })(jQuery); // end of jQuery name space
+  </script>
+  
+  </body>
+</html>

@@ -1,0 +1,124 @@
+<html> <head>
+<script src='node_modules/web3/dist/web3.min.js'></script>
+<script type="text/javascript"> 
+window.addEventListener('load', async () => {
+	if (window.ethereum) {
+		window.alert('Modern dapp browsers')
+	} else if (window.web3) {
+		window.alert('Legacy dapp browsers')
+	} else {
+		window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!');
+	}
+
+  let btn = document.getElementById("btn");
+  btn.addEventListener('click', btnClicked);
+
+});
+
+async function btnClicked() {
+	alert("btnClicked()");
+	window.accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+	const showAccount = document.querySelector('.showAccount');
+	showAccount.innerHTML = accounts[0];
+	
+var abiobj = [
+		{
+					"inputs": [
+									{
+														"internalType": "string",
+														"name": "_msg1",
+														"type": "string"
+													}
+								],
+					"stateMutability": "nonpayable",
+					"type": "constructor"
+				},
+		{
+					"inputs": [],
+					"name": "counter",
+					"outputs": [
+									{
+														"internalType": "uint8",
+														"name": "",
+														"type": "uint8"
+													}
+								],
+					"stateMutability": "view",
+					"type": "function"
+				},
+		{
+					"inputs": [],
+					"name": "getMsg2",
+					"outputs": [
+									{
+														"internalType": "string",
+														"name": "",
+														"type": "string"
+													}
+								],
+					"stateMutability": "view",
+					"type": "function"
+				},
+		{
+					"inputs": [],
+					"name": "msg1",
+					"outputs": [
+									{
+														"internalType": "string",
+														"name": "",
+														"type": "string"
+													}
+								],
+					"stateMutability": "view",
+					"type": "function"
+				},
+		{
+					"inputs": [],
+					"name": "owner",
+					"outputs": [
+									{
+														"internalType": "address",
+														"name": "",
+														"type": "address"
+													}
+								],
+					"stateMutability": "view",
+					"type": "function"
+				},
+		{
+					"inputs": [],
+					"name": "setCounter",
+					"outputs": [],
+					"stateMutability": "nonpayable",
+					"type": "function"
+				},
+		{
+					"inputs": [
+									{
+														"internalType": "string",
+														"name": "_msg2",
+														"type": "string"
+													}
+								],
+					"name": "setMsg2",
+					"outputs": [],
+					"stateMutability": "nonpayable",
+					"type": "function"
+				}
+	];
+var address = "0xDA5B2B5b8eb8B632f445Ad58374174e54D8a322D";
+
+window.web3 = new Web3(window.ethereum);
+contractInstance = await new window.web3.eth.Contract(abiobj, address);
+const value = await contractInstance.methods.counter().call();
+alert(value);
+}
+</script>
+</head> <body>
+<h1> Event Test </h1>
+<br/>
+<input type="button" id="btn" value="click">
+<h2>Account: <span class="showAccount"></span></h2>
+</body> </html>
+
+
