@@ -38,6 +38,36 @@
       <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
     </div>
   </nav>
+
+  <!-- Modal Structure -->
+  <div id="modal1" class="modal">
+    <div class="modal-content">
+      <h4>Tree Fund 생성 마법사</h4>
+      <p>새로운 Tree Fund를 생성합니다! 다음과 같은 정보를 입력해주세요!</p>
+      <row>
+      <div class="input-field col s6">
+        <i class="material-icons prefix">mode_edit</i>
+        <textarea id="newFundName" class="materialize-textarea"></textarea>
+        <label for="icon_prefix2">이름</label>
+      </div>
+      <div class="input-field col s6">
+        <i class="material-icons prefix">mode_edit</i>
+        <textarea id="newFundDuration" class="materialize-textarea"></textarea>
+        <label for="icon_prefix2">기간(초)</label>
+      </div>
+      <div class="input-field col s6">
+        <i class="material-icons prefix">mode_edit</i>
+        <textarea id="newFundGoal" class="materialize-textarea"></textarea>
+        <label for="icon_prefix2">목표금액(wei)</label>
+      </div>
+    </row>
+    </div>
+    <div class="modal-footer">
+      <a class="modal-close waves-effect waves-green btn-flat">취소</a>
+      <a class="modal-close waves-effect waves-green btn-flat" id="createNewFund">생성</a>
+    </div>
+  </div>
+
   <div class="section no-pad-bot" id="index-banner">
     <div class="container">
       <br><br>
@@ -353,12 +383,28 @@
     }
   }
 
+  async function createNewTreeFund() {
+    if (contractInstance != null) {
+      try {
+          let _name = $('#newFundName').val();
+          let _duration = $('#newFundDuration').val();
+          let _goalAmount =  $('#newFundGoal').val();
+          let value1 = await contractInstance.methods['createSmartTreeFunding(string,uint256,uint256)'](_name, _duration, _goalAmount).send({from:accounts[0]});
+          console.log(value1);
+
+      } catch (error) {
+        alert("Transaction 생성중 문제가 발생되었습니다!");
+        console.log(error);
+      }
+    }
+  }
+
   (function($){
     $(window).load(async () => {
       if (window.ethereum) {
         window.web3 = new Web3(window.ethereum);
         contractInstance = await new window.web3.eth.Contract(abiobj, address);
-        getTreeFundsResult();
+        // getTreeFundsResult();
 
       } else if (window.web3) {
         window.web3 = new Web3(web3.currentProvider);
@@ -369,24 +415,38 @@
       }
     });
 
-    $(document).ready(function(){
+    $(document).ready(function() {
+      $('.modal').modal({
+		    dismissible: false,
+        onCloseEnd: () => {
+          $('#newFundName').val(null);
+          $('#newFundDuration').val(null);
+          $('#newFundGoal').val(null);
+        }
+	    });
+      $('.sidenav').sidenav();
+
+      $('#createNewFund').click(async () => {
+        createNewTreeFund();
+        $('#modal1').modal('close');
+      });
+
       $('#connetMetaMaskBtn').click(async () => {
         window.accounts = await ethereum.request({ method: 'eth_requestAccounts' });
         
         if (window.accounts[0] != $('#loginResultBox').text()) {
 	        $('#loginResultBox').text(window.accounts[0]);
           $('#connetMetaMaskBtn').text("Fund 생성하기");
+          $('#connetMetaMaskBtn').attr('href', '#');
+          
         } else {
-          alert("Logic For Create Fund");
+          $('#modal1').modal('open');
+
         }
         
       });
 
     });
-
-    $(function(){
-      $('.sidenav').sidenav();
-    }); // end of document ready
   })(jQuery); // end of jQuery name space
   </script>
   
