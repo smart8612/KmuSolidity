@@ -405,10 +405,29 @@
   }
 
   // Fund Card에서 투자하기 버튼을 클릭하면 호출되는 콜백함수
-  function fundToFundung(id) {
+  function fundToFunding(id) {
     $('#fundIdField').val(id);
     $('#modal2').modal('open');
     
+  }
+
+  async function chechGoalFund(id) {
+    window.accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+
+    try {
+      if (contractInstance != null) {
+        console.log(contractInstance.methods);
+        let value1 = await contractInstance.methods['checkGoalReached(uint256)'](id).send({
+          from:accounts[0]
+        });
+        console.log(value1);
+        location.reload();
+      }
+
+    } catch (error) {
+      alert("Transaction 생성중 문제가 발생되었습니다!");
+      console.log(error);
+    }
   }
 
   async function renderFundCard(card, id) {
@@ -423,10 +442,12 @@
       let lists = $(ulist).children();
 
       let fundBtn = $(cardContents[1]).children()[0];
-
+      let chechGoalBtn = $(cardContents[1]).children()[1];
+      
       $(title).text(fund["name"]);
       $(ulist).attr("id", "fundInfolist_"+(id));
-      $(fundBtn).attr("onclick", "fundToFundung(" + id + ")");
+      $(fundBtn).attr("onclick", "fundToFunding(" + id + ");");
+      $(chechGoalBtn).attr("onclick", "chechGoalFund(" + id +");");
 
       for (var i=0; i<lists.length; i++) {
         let each = lists[i];
