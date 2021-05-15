@@ -112,7 +112,7 @@
       </div>
       <div class="card-action">
         <a >투자하기</a>
-        <a href="#">세부정보</a>
+        <a >검사하기</a>
       </div>
     </div>
   </div>
@@ -396,7 +396,6 @@
           let _duration = $('#newFundDuration').val();
           let _goalAmount =  $('#newFundGoal').val();
           let value1 = await contractInstance.methods['createSmartTreeFunding(string,uint256,uint256)'](_name, _duration, _goalAmount).send({from:accounts[0]});
-          console.log(value1);
 
       } catch (error) {
         alert("Transaction 생성중 문제가 발생되었습니다!");
@@ -414,7 +413,7 @@
 
   async function renderFundCard(card, id) {
       let fund = await contractInstance.methods['funds(uint256)'](id).call();
-      console.log(fund);
+
       card.attr("id", "fundCard_"+(id));
       card.attr("style", "");
 
@@ -433,13 +432,11 @@
         let each = lists[i];
         $(each).text(fund[i+1]);
       }
-      console.log(fundBtn);
 
   }
 
   async function cloneFundCard() {
     let fundCnt = await contractInstance.methods['getFundsCount']().call();
-    console.log(fundCnt);
     
     let cards = $('#cardsRow_0');
     for (var i=0; i<fundCnt; i++) {
@@ -485,12 +482,26 @@
       });
       
       $('#execFundBtn').click(async () => {
+        window.accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+
         try {
           let cardFundId = $('#fundIdField').val();
+          let weiAmount = $('#weiInputField').val();
+          
+          if (contractInstance != null) {
+            console.log(contractInstance.methods);
+            let value1 = await contractInstance.methods['fund(uint256)'](cardFundId).send({
+              from:accounts[0],
+              value: Number(weiAmount)
+            });
+            console.log(value1);
+          }
+
         } catch (error) {
           alert("Transaction 생성중 문제가 발생되었습니다!");
           console.log(error);
         }
+
         $('#modal2').modal('close');
 
       });
