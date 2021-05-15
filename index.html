@@ -50,21 +50,49 @@
         <textarea id="newFundName" class="materialize-textarea"></textarea>
         <label for="icon_prefix2">이름</label>
       </div>
+      </row>
+      <row>
       <div class="input-field col s6">
         <i class="material-icons prefix">mode_edit</i>
         <textarea id="newFundDuration" class="materialize-textarea"></textarea>
         <label for="icon_prefix2">기간(초)</label>
       </div>
-      <div class="input-field col s6">
+      </row>
+      <row>
+      <div class="input-field col s12">
         <i class="material-icons prefix">mode_edit</i>
         <textarea id="newFundGoal" class="materialize-textarea"></textarea>
         <label for="icon_prefix2">목표금액(wei)</label>
       </div>
+      </row>
     </row>
     </div>
     <div class="modal-footer">
       <a class="modal-close waves-effect waves-green btn-flat">취소</a>
       <a class="modal-close waves-effect waves-green btn-flat" id="createNewFund">생성</a>
+    </div>
+  </div>
+
+  <!-- Modal Structure For Fund -->
+  <div id="modal2" class="modal">
+    <div class="modal-content">
+      <h4>금액을 입력해주세요!</h4>
+      <p>단위는 Wei 입니다</p>
+      <div class="row">
+        <div class="input-field col s12">
+          <input disabled value="I am not editable" id="fundIdField" type="text" class="validate">
+          <label for="disabled">Fund Id</label>
+        </div>
+        <div class="input-field col s12">
+          <i class="material-icons prefix">mode_edit</i>
+          <textarea id="weiInputField" class="materialize-textarea"></textarea>
+          <label for="icon_prefix2">Wei</label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <a class="modal-close waves-effect waves-green btn-flat">취소하기</a>
+      <a id="execFundBtn" class="modal-close waves-effect waves-green btn-flat">투자하기</a>
     </div>
   </div>
 
@@ -74,16 +102,16 @@
       <div class="card-content white-text">
         <span class="card-title">Card Title</span>
         <ul id='fundInfolist_' >
-          <li>one</li>
-          <li>two</li>
-          <li>three</li>
-          <li>dsa</li>
-          <li>four</li>
-          <li>five</li>
+          투자자 수: <li>one</li>
+          마감 시한: <li>two</li>
+          상태 정보: <li>three</li>
+          마감 여부: <li>dsa</li>
+          목표 금액: <li>four</li>
+          현 모금액: <li>five</li>
         </ul>
       </div>
       <div class="card-action">
-        <a href="#">투자하기</a>
+        <a >투자하기</a>
         <a href="#">세부정보</a>
       </div>
     </div>
@@ -98,7 +126,7 @@
         <h5 class="header col s12 light" id="loginResultBox">로그인에 성공하면 이곳에 계정 주소가 표시됩니다</h5>
       </div>
       <div class="row center">
-        <a class="waves-effect waves-light btn-large" href="#" id="connetMetaMaskBtn">연동하기</a>
+        <a class="waves-effect waves-light btn-large" id="connetMetaMaskBtn">연동하기</a>
       </div>
       <br><br>
 
@@ -151,7 +179,7 @@
   </footer>
 
 
-  <!--  Scripts-->
+  <!--  Scripts -->
   <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <script src='node_modules/web3/dist/web3.min.js'></script>
@@ -377,6 +405,13 @@
     }
   }
 
+  // Fund Card에서 투자하기 버튼을 클릭하면 호출되는 콜백함수
+  function fundToFundung(id) {
+    $('#fundIdField').val(id);
+    $('#modal2').modal('open');
+    
+  }
+
   async function renderFundCard(card, id) {
       let fund = await contractInstance.methods['funds(uint256)'](id).call();
       console.log(fund);
@@ -387,16 +422,18 @@
       let title = cardContents.children()[0];
       let ulist = cardContents.children()[1]
       let lists = $(ulist).children();
-      
-      $(title).text(fund["name"]);
 
+      let fundBtn = $(cardContents[1]).children()[0];
+
+      $(title).text(fund["name"]);
       $(ulist).attr("id", "fundInfolist_"+(id));
+      $(fundBtn).attr("onclick", "fundToFundung(" + id + ")");
 
       for (var i=0; i<lists.length; i++) {
         let each = lists[i];
         $(each).text(fund[i+1]);
       }
-      console.log(lists);
+      console.log(fundBtn);
 
   }
 
@@ -417,7 +454,6 @@
       if (window.ethereum) {
         window.web3 = new Web3(window.ethereum);
         contractInstance = await new window.web3.eth.Contract(abiobj, address);
-        // getTreeFundsResult();
         cloneFundCard();
 
       } else if (window.web3) {
@@ -436,6 +472,8 @@
           $('#newFundName').val(null);
           $('#newFundDuration').val(null);
           $('#newFundGoal').val(null);
+          $('#weiInputField').val(null);
+          $('#fundIdField').val(null);
         }
 	    });
       $('.sidenav').sidenav();
@@ -443,6 +481,18 @@
       $('#createNewFund').click(async () => {
         createNewTreeFund();
         $('#modal1').modal('close');
+
+      });
+      
+      $('#execFundBtn').click(async () => {
+        try {
+          let cardFundId = $('#fundIdField').val();
+        } catch (error) {
+          alert("Transaction 생성중 문제가 발생되었습니다!");
+          console.log(error);
+        }
+        $('#modal2').modal('close');
+
       });
 
       $('#connetMetaMaskBtn').click(async () => {
