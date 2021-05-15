@@ -39,7 +39,7 @@
     </div>
   </nav>
 
-  <!-- Modal Structure -->
+  <!-- Modal Structure For Create Fund -->
   <div id="modal1" class="modal">
     <div class="modal-content">
       <h4>Tree Fund 생성 마법사</h4>
@@ -68,6 +68,28 @@
     </div>
   </div>
 
+  <!-- Card Somponent For Write Funding Info -->
+  <div class="col s12 m4" id="newFundCard" style="display: none;" >
+    <div class="card blue-grey darken-1">
+      <div class="card-content white-text">
+        <span class="card-title">Card Title</span>
+        <ul id='fundInfolist_' >
+          <li>one</li>
+          <li>two</li>
+          <li>three</li>
+          <li>dsa</li>
+          <li>four</li>
+          <li>five</li>
+        </ul>
+      </div>
+      <div class="card-action">
+        <a href="#">투자하기</a>
+        <a href="#">세부정보</a>
+      </div>
+    </div>
+  </div>
+
+
   <div class="section no-pad-bot" id="index-banner">
     <div class="container">
       <br><br>
@@ -85,38 +107,9 @@
 
 
   <div class="container">
-    <div class="section">
-
-      <!--   Icon Section   -->
-      <div class="row">
-        <div class="col s12 m4">
-          <div class="icon-block">
-            <h2 class="center light-blue-text"><i class="material-icons">flash_on</i></h2>
-            <h5 class="center">Speeds up development</h5>
-
-            <p class="light">We did most of the heavy lifting for you to provide a default stylings that incorporate our custom components. Additionally, we refined animations and transitions to provide a smoother experience for developers.</p>
-          </div>
-        </div>
-
-        <div class="col s12 m4">
-          <div class="icon-block">
-            <h2 class="center light-blue-text"><i class="material-icons">group</i></h2>
-            <h5 class="center">User Experience Focused</h5>
-
-            <p class="light">By utilizing elements and principles of Material Design, we were able to create a framework that incorporates components and animations that provide more feedback to users. Additionally, a single underlying responsive system across all platforms allow for a more unified user experience.</p>
-          </div>
-        </div>
-
-        <div class="col s12 m4">
-          <div class="icon-block">
-            <h2 class="center light-blue-text"><i class="material-icons">settings</i></h2>
-            <h5 class="center">Easy to work with</h5>
-
-            <p class="light">We have provided detailed documentation as well as specific code examples to help new users get started. We are also always open to feedback and can answer any questions a user may have about Materialize.</p>
-          </div>
-        </div>
-      </div>
-
+    <div class="section" id="cardViewLayout">
+      <!--   card Section   -->
+      <div class="row" id="cardsRow_0"></div>
     </div>
     <br><br>
   </div>
@@ -368,21 +361,6 @@
 	}
 ];
 
-  async function getTreeFundsResult() {
-    console.log(contractInstance);
-    if (contractInstance != null) {
-      try {
-        let value1 = await contractInstance.methods['funds(uint256)'](0).call();
-        console.log(value1);
-        let value2 = await contractInstance.methods['getFundsCount']().call();
-        console.log(value2);
-
-      } catch (error) {
-          console.log(error);
-      }
-    }
-  }
-
   async function createNewTreeFund() {
     if (contractInstance != null) {
       try {
@@ -399,12 +377,48 @@
     }
   }
 
+  async function renderFundCard(card, id) {
+      let fund = await contractInstance.methods['funds(uint256)'](id).call();
+      console.log(fund);
+      card.attr("id", "fundCard_"+(id));
+      card.attr("style", "");
+
+      let cardContents = card.children().children();
+      let title = cardContents.children()[0];
+      let ulist = cardContents.children()[1]
+      let lists = $(ulist).children();
+      
+      $(title).text(fund["name"]);
+
+      $(ulist).attr("id", "fundInfolist_"+(id));
+
+      for (var i=0; i<lists.length; i++) {
+        let each = lists[i];
+        $(each).text(fund[i+1]);
+      }
+      console.log(lists);
+
+  }
+
+  async function cloneFundCard() {
+    let fundCnt = await contractInstance.methods['getFundsCount']().call();
+    console.log(fundCnt);
+    
+    let cards = $('#cardsRow_0');
+    for (var i=0; i<fundCnt; i++) {
+      let tmpCard = $('#newFundCard').clone();
+      renderFundCard(tmpCard, i);
+      cards.append(tmpCard);
+    }
+  }
+
   (function($){
     $(window).load(async () => {
       if (window.ethereum) {
         window.web3 = new Web3(window.ethereum);
         contractInstance = await new window.web3.eth.Contract(abiobj, address);
         // getTreeFundsResult();
+        cloneFundCard();
 
       } else if (window.web3) {
         window.web3 = new Web3(web3.currentProvider);
